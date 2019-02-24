@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>BWigg's Subnet Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="main.css">
+</head>
+
+<body>
+  <div id="subnet-calculator">
+    <input v-model="input" @keyup="onchange($event.target.value)" placeholder="CIDR 10.0.0.0/24" />
+
+    <div class="container">
+
+      <ip title="IP" :ip="cidr.ip" :netmask="cidr.networkbits"></ip>
+      <ip title="Subnet Mask" :ip="cidr.subnetMask" :netmask="cidr.networkbits"></ip>
+      <ip title="Wildcard" :ip="cidr.wildcard" :netmask="cidr.networkbits"></ip>
+      <ip title="Subnet" :ip="cidr.subnet" :netmask="cidr.networkbits"></ip>
+      <ip title="Broadcast" :ip="cidr.broadcast" :netmask="cidr.networkbits"></ip>
+      <ip title="First Host" :ip="cidr.network + 1" :netmask="cidr.networkbits"></ip>
+      <ip title="Last Host" :ip="cidr.network - 1" :netmask="cidr.networkbits"></ip>
+
+      <pre>{{cidr}}</pre>
+    </div>
+  </div>
+
+  <script src="/vue.js"></script>
+  <script src="/main.js"></script>
+
+</body>
+
+</html>

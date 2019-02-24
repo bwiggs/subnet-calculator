@@ -1,0 +1,46 @@
+input {
+  font-size: 2em;
+  font-family: monospace;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.binary {
+  font-family: monospace;
+  font-size: 1.5rem;
+}
+
+.container {
+  margin: 0 auto;
+}
+
+h1 {
+  font-family: monospace;
+  text-align: left;
+}
+
+.binary span {
+  padding: 5px;
+  display: inline-block;
+}
+
+.n {
+  background: lightblue;
+}
+
+.h {
+  background: lightgreen;
+}
+
+.s {
+  background: lightgrey;
+}
+
+.on {
+  filter: brightness(112%)
+}
+
+/* .off {
+  filter: brightness(95%)
+} */
