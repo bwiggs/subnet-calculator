@@ -11,23 +11,20 @@
 
 <body>
   <div id="subnet-calculator">
+    <h1 class="text-center">BWigg's Subnet Calculator</h1>
+
     <input v-model="input" @keyup="onchange($event.target.value)" placeholder="CIDR 10.0.0.0/24" />
 
-    <div class="container">
-
-      <ip title="IP" :ip="cidr.ip" :netmask="cidr.networkbits"></ip>
-      <ip title="Subnet Mask" :ip="cidr.subnetMask" :netmask="cidr.networkbits"></ip>
-      <ip title="Wildcard" :ip="cidr.wildcard" :netmask="cidr.networkbits"></ip>
-      <ip title="Subnet" :ip="cidr.subnet" :netmask="cidr.networkbits"></ip>
-      <ip title="Broadcast" :ip="cidr.broadcast" :netmask="cidr.networkbits"></ip>
-      <ip title="First Host" :ip="cidr.network + 1" :netmask="cidr.networkbits"></ip>
-      <ip title="Last Host" :ip="cidr.network - 1" :netmask="cidr.networkbits"></ip>
-
-      <pre>{{cidr}}</pre>
-    </div>
+    <ip title="IP" :ip="cidr.ip" :netmask="cidr.networkbits"></ip>
+    <ip :title="`Subnet (Class ${cidr.class})`" :ip="cidr.subnet" :netmask="cidr.networkbits"></ip>
+    <ip title="Subnet Mask" :ip="cidr.subnetMask" :netmask="cidr.networkbits"></ip>
+    <ip :title="`Wildcard (${cidr.hosts.toLocaleString()} hosts)`" :ip="cidr.wildcard" :netmask="cidr.networkbits"></ip>
+    <ip title="Broadcast" :ip="cidr.broadcast" :netmask="cidr.networkbits"></ip>
+    <ip title="First Host" :ip="cidr.subnet + 1" :netmask="cidr.networkbits"></ip>
+    <ip title="Last Host" :ip="cidr.subnet - 1" :netmask="cidr.networkbits"></ip>
   </div>
 
-  <script src="/vue.js"></script>
+  <script src="/vue.min.js"></script>
   <script src="/main.js"></script>
 
 </body>
