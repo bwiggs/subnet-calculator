@@ -20,11 +20,9 @@
     <ip :title="`Subnet (Class ${cidr.class})`" :ip="cidr.subnet" :netmask="cidr.networkbits"></ip>
     <ip title="Subnet Mask" :ip="cidr.subnetMask" :netmask="cidr.networkbits"></ip>
     <ip :title="`Wildcard (${cidr.hosts.toLocaleString()} hosts)`" :ip="cidr.wildcard" :netmask="cidr.networkbits"></ip>
-    <ip title="Broadcast" :ip="cidr.broadcast" :netmask="cidr.networkbits"></ip>
     <ip title="First Host" :ip="cidr.subnet + 1" :netmask="cidr.networkbits"></ip>
-    <ip title="Last Host" :ip="cidr.subnet - 1" :netmask="cidr.networkbits"></ip>
-    <pre>{{cidr}}</pre>
-
+    <ip title="Last Host" :ip="cidr.broadcast - 1" :netmask="cidr.networkbits"></ip>
+    <ip title="Broadcast" :ip="cidr.broadcast" :netmask="cidr.networkbits"></ip>
   </div>
 
   <script src="vue.min.js"></script>
