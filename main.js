@@ -1,33 +1,11 @@
-class CIDR {
-  constructor(cidr) {
-    let parts = cidr.split("/");
+class IPv4 {
 
-    this.ip = this.parseOctets(parts[0]);
-    this.networkbits = parseInt(parts[1]);
-    this.wildcard = (1 << (32 - this.networkbits)) - 1;
-    this.subnetMask = 0xffffffff - this.wildcard;
-    this.subnet = this.subnetMask & this.ip;
-    this.broadcast = this.ip | this.wildcard;
-    this.hosts = this.wildcard - 2;
-
-    const classbits = this.ip >> 24;
-    if (!(classbits & 0x80)) {
-      this.class = "A"; // ip binary starts with 0
-    } else if (classbits & 192) {
-      this.class = "C"; // ip binary starts with 11
-    } else if (classbits & 128) {
-      this.class = "B"; // ip binary starts with 10
-    }
-  }
-
-  parseOctets(ip) {
+  static parseOctets(ip) {
     return ip
       .split(".")
       .reduce((val, octet) => (val << 8) | parseInt(octet), 0);
   }
-}
 
-class IPv4 {
   static toBinary(n) {
     return [
       ((n >> 24) & 0xff).toString(2).padStart(8, "0"),
@@ -44,6 +22,29 @@ class IPv4 {
       ((n >> 8) & 0xff).toString(10),
       ((n >> 0) & 0xff).toString(10)
     ].join(".");
+  }
+}
+
+class CIDR {
+  constructor(cidr) {
+    let parts = cidr.split("/");
+
+    this.ip = IPv4.parseOctets(parts[0]);
+    this.networkbits = parseInt(parts[1]);
+    this.wildcard = (1 << (32 - this.networkbits)) - 1;
+    this.subnetMask = 0xffffffff - this.wildcard;
+    this.subnet = this.subnetMask & this.ip;
+    this.broadcast = this.ip | this.wildcard;
+    this.hosts = this.wildcard - 2;
+
+    const classbits = this.ip >> 24;
+    if (!(classbits & 0x80)) {
+      this.class = "A"; // ip binary starts with 0
+    } else if (classbits & 192) {
+      this.class = "C"; // ip binary starts with 11
+    } else if (classbits & 128) {
+      this.class = "B"; // ip binary starts with 10
+    }
   }
 }
 
@@ -80,8 +81,7 @@ Vue.component("ip", {
     <div class="binary">
       <span v-for="(bit, index) in binary(ip).split('')" v-bind:class="spanClass(bit, index)">{{bit}}</span>
     </div>
-  </div>
-  `
+  </div>`
 });
 
 
