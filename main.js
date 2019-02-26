@@ -27,6 +27,10 @@ class IPv4 {
 
 class CIDR {
   constructor(cidr) {
+    if (!cidr || !cidr.match(/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}\/\d{1,2}/)) {
+      cidr = '192.168.1.100/24';
+    }
+
     let parts = cidr.split("/");
 
     this.ip = IPv4.parseOctets(parts[0]);
@@ -88,6 +92,14 @@ Vue.component("ip", {
 var app = new Vue({
   el: "#subnet-calculator",
   created: function () {
+    let self = this;
+    fetch("https://ipv4.ip.nf/me.json").then(function (res) {
+      return res.json();
+    }).then(function (body) {
+      self.input = body.ip.ip + '/' + body.ip.netmask;
+      self.cidr = new CIDR(self.input);
+    });
+
     let params = window.location.hash.slice(1).split("&").reduce((params, hv) => {
       let p = hv.split("=");
       params[p[0]] = p[1];
@@ -100,8 +112,8 @@ var app = new Vue({
     }
   },
   data: {
-    input: "8.8.8.8/24",
-    cidr: new CIDR("8.8.8.8/24"),
+    input: "",
+    cidr: new CIDR(),
     showBinary: false
   },
   methods: {
