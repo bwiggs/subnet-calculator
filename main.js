@@ -4,11 +4,12 @@ class CIDR {
 
     this.ip = this.parseOctets(parts[0]);
     this.networkbits = parseInt(parts[1]);
-    this.wildcard = (1 << (32 - this.networkbits)) - 1;
+    this.hostbits = 32 - this.networkbits
+    this.wildcard = (1 << (this.hostbits)) - 1;
     this.subnetMask = 0xffffffff - this.wildcard;
     this.subnet = this.subnetMask & this.ip;
     this.broadcast = this.ip | this.wildcard;
-    this.hosts = this.wildcard - 2;
+    this.hosts = (2 ** this.hostbits) - 2;
 
     const classbits = this.ip >> 24;
     if (!(classbits & 0x80)) {
