@@ -9,7 +9,7 @@ class CIDR {
     this.subnetMask = 0xffffffff - this.wildcard;
     this.subnet = this.subnetMask & this.ip;
     this.broadcast = this.ip | this.wildcard;
-    this.hosts = (2 ** this.hostbits) - 2;
+    this.hosts = Math.max((2 ** this.hostbits) - Math.min(this.hostbits , 2), 1);
 
     const classbits = this.ip >> 24;
     if (!(classbits & 0x80)) {
