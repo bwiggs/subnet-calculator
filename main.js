@@ -1,34 +1,11 @@
-class CIDR {
-  constructor(cidr) {
-    let parts = cidr.split("/");
+class IPv4 {
 
-    this.ip = this.parseOctets(parts[0]);
-    this.networkbits = parseInt(parts[1]);
-    this.hostbits = 32 - this.networkbits
-    this.wildcard = (1 << (this.hostbits)) - 1;
-    this.subnetMask = 0xffffffff - this.wildcard;
-    this.subnet = this.subnetMask & this.ip;
-    this.broadcast = this.ip | this.wildcard;
-    this.hosts = Math.max((2 ** this.hostbits) - Math.min(this.hostbits , 2), 1);
-
-    const classbits = this.ip >> 24;
-    if (!(classbits & 0x80)) {
-      this.class = "A"; // ip binary starts with 0
-    } else if (classbits & 192) {
-      this.class = "C"; // ip binary starts with 11
-    } else if (classbits & 128) {
-      this.class = "B"; // ip binary starts with 10
-    }
-  }
-
-  parseOctets(ip) {
+  static parseOctets(ip) {
     return ip
       .split(".")
       .reduce((val, octet) => (val << 8) | parseInt(octet), 0);
   }
-}
 
-class IPv4 {
   static toBinary(n) {
     return [
       ((n >> 24) & 0xff).toString(2).padStart(8, "0"),
@@ -45,6 +22,34 @@ class IPv4 {
       ((n >> 8) & 0xff).toString(10),
       ((n >> 0) & 0xff).toString(10)
     ].join(".");
+  }
+}
+
+class CIDR {
+  constructor(cidr) {
+    if (!cidr || !cidr.match(/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}\/\d{1,2}/)) {
+      cidr = '192.168.1.100/24';
+    }
+
+    let parts = cidr.split("/");
+
+    this.ip = IPv4.parseOctets(parts[0]);
+    this.networkbits = parseInt(parts[1]);
+    this.hostbits = 32 - this.networkbits
+    this.wildcard = (1 << (this.hostbits)) - 1;
+    this.subnetMask = 0xffffffff - this.wildcard;
+    this.subnet = this.subnetMask & this.ip;
+    this.broadcast = this.ip | this.wildcard;
+    this.hosts = (2 ** this.hostbits) - 2;
+
+    const classbits = this.ip >> 24;
+    if (!(classbits & 0x80)) {
+      this.class = "A"; // ip binary starts with 0
+    } else if (classbits & 192) {
+      this.class = "C"; // ip binary starts with 11
+    } else if (classbits & 128) {
+      this.class = "B"; // ip binary starts with 10
+    }
   }
 }
 
@@ -81,14 +86,21 @@ Vue.component("ip", {
     <div class="binary">
       <span v-for="(bit, index) in binary(ip).split('')" v-bind:class="spanClass(bit, index)">{{bit}}</span>
     </div>
-  </div>
-  `
+  </div>`
 });
 
 
 var app = new Vue({
   el: "#subnet-calculator",
   created: function () {
+    let self = this;
+    fetch("https://ipv4.ip.nf/me.json").then(function (res) {
+      return res.json();
+    }).then(function (body) {
+      self.input = body.ip.ip + '/' + body.ip.netmask;
+      self.cidr = new CIDR(self.input);
+    });
+
     let params = window.location.hash.slice(1).split("&").reduce((params, hv) => {
       let p = hv.split("=");
       params[p[0]] = p[1];
@@ -101,8 +113,8 @@ var app = new Vue({
     }
   },
   data: {
-    input: "8.8.8.8/24",
-    cidr: new CIDR("8.8.8.8/24"),
+    input: "",
+    cidr: new CIDR(),
     showBinary: false
   },
   methods: {
