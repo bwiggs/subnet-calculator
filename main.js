@@ -27,29 +27,48 @@ class IPv4 {
 
 class CIDR {
   constructor(cidr) {
-    if (!cidr || !cidr.match(/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}\/\d{1,2}/)) {
-      cidr = '192.168.1.100/24';
+    if(!cidr) {
+      return;
     }
 
-    let parts = cidr.split("/");
+    let [ip, net] = cidr.split("/");
 
-    this.ip = IPv4.parseOctets(parts[0]);
-    this.networkbits = parseInt(parts[1]);
+    this.ip = IPv4.parseOctets(ip);
+
+    const classbits = this.ip >> 24;
+    if (!(classbits & 0x80)) {
+      this.class = "A"; // ip binary starts with 0
+      net ||= 8
+    } else if (classbits & 192) {
+      this.class = "C"; // ip binary starts with 11
+      net ||= 24
+    } else if (classbits & 128) {
+      this.class = "B"; // ip binary starts with 10
+      net ||= 16
+    }
+
+    // check for rfc1918 address
+    const netbits = this.ip >> 16;
+    this.isRFC1918 = (
+      (netbits & 0xFF00) == 0x0A00 || // 10.*.*.*
+      (netbits & 0xFFF0) == 0xAC10 || // 172.16.*.*
+      (netbits & 0xFFFF) == 0xC0A8    // 192.168.*.*
+    );
+    this.isLinkLocal = (netbits & 0xFFFF) == 0xA9FE // 169.254 link local address
+    this.isLoopBack = (netbits & 0xFF00) == 0x7F00 // 169.254 link local address
+    
+    if(this.isRFC1918) this.type = 'Private';
+    else if(this.isLinkLocal) this.type = 'Link Local';
+    else if(this.isLoopBack) this.type = 'Loopback';
+    else this.type = null;
+
+    this.networkbits = parseInt(net);
     this.hostbits = 32 - this.networkbits
     this.wildcard = (1 << (this.hostbits)) - 1;
     this.subnetMask = 0xffffffff - this.wildcard;
     this.subnet = this.subnetMask & this.ip;
     this.broadcast = this.ip | this.wildcard;
     this.hosts = Math.max((2 ** this.hostbits) - Math.min(this.hostbits , 2), 1);
-
-    const classbits = this.ip >> 24;
-    if (!(classbits & 0x80)) {
-      this.class = "A"; // ip binary starts with 0
-    } else if (classbits & 192) {
-      this.class = "C"; // ip binary starts with 11
-    } else if (classbits & 128) {
-      this.class = "B"; // ip binary starts with 10
-    }
   }
 }
 
@@ -96,8 +115,8 @@ var app = new Vue({
     let self = this;
     fetch("https://ipv4.ip.nf/me.json").then(function (res) {
       return res.json();
-    }).then(function (body) {
-      self.input = body.ip.ip + '/' + body.ip.netmask;
+    }).then(function (data) {
+      self.input = data.ip.ip + '/' + data.ip.netmask;
       self.cidr = new CIDR(self.input);
     });
 

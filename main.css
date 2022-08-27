@@ -1,6 +1,9 @@
+* {
+  font-family: monospace;
+}
+
 input {
   font-size: 2em;
-  font-family: monospace;
   padding: 10px 0;
   text-align: center;
   width: 100%;
@@ -79,6 +82,20 @@ h1 {
 
 .on {
   filter: brightness(112%)
+}
+
+.input {
+  position: relative;
+}
+.input .address-type {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: #fff;
+  font-size: 1.2rem;
+  border: 1px solid #f70;
+  background: darkorange;
+  padding: .2rem .3rem;
 }
 
 /* .off {

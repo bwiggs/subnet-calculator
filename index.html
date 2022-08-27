@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>BWigg's Subnet Calculator</title>
-  <base href="/subnet-calculator/">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css">
 </head>
@@ -15,12 +15,16 @@
     <div id="subnet-calculator">
       <h1 class="text-center">BWigg's Subnet Calculator</h1>
       
-      <input v-model="input" @keyup="onchange($event.target.value)" placeholder="CIDR 10.0.0.0/24" />
+      <div class="input">
+        <input v-model="input" @keyup="onchange($event.target.value)" placeholder="CIDR 10.0.0.0/24" />
+        <span v-if="cidr.type" class="address-type">{{cidr.type}}</span>
+      </div>
+
       
       <ip title="IP" :ip="cidr.ip" :netmask="cidr.networkbits"></ip>
       <ip :title="`Subnet (Class ${cidr.class})`" :ip="cidr.subnet" :netmask="cidr.networkbits"></ip>
       <ip title="Subnet Mask" :ip="cidr.subnetMask" :netmask="cidr.networkbits"></ip>
-      <ip :title="`Wildcard (${cidr.hosts.toLocaleString()} hosts)`" :ip="cidr.wildcard" :netmask="cidr.networkbits"></ip>
+      <ip :title="`Wildcard (${cidr.hosts?.toLocaleString()} hosts)`" :ip="cidr.wildcard" :netmask="cidr.networkbits"></ip>
       <ip title="First Host" :ip="cidr.subnet + 1" :netmask="cidr.networkbits"></ip>
       <ip title="Last Host" :ip="cidr.broadcast - 1" :netmask="cidr.networkbits"></ip>
       <ip title="Broadcast" :ip="cidr.broadcast" :netmask="cidr.networkbits"></ip>
